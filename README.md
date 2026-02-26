@@ -1,4 +1,6 @@
-# [MySQL Query Skill](https://github.com/hanhx/mysql-query)
+# MySQL Query Skill
+
+[![GitHub](https://img.shields.io/badge/GitHub-hanhx%2Fmysql--query-blue?logo=github)](https://github.com/hanhx/mysql-query)
 
 让 AI 编辑器（Windsurf / Cursor）直接查询 MySQL 数据库，只读安全，开箱即用。
 
