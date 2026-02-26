@@ -1,0 +1,16 @@
+# 忽略包含敏感信息的配置文件
+config.json
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.bak
+.DS_Store

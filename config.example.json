@@ -1,0 +1,20 @@
+{
+  "connections": {
+    "test": {
+      "host": "your-host.example.com",
+      "port": 3306,
+      "database": "your_database",
+      "username": "your-username",
+      "password": "your-password",
+      "description": "测试环境数据库"
+    },
+    "dev": {
+      "host": "localhost",
+      "port": 3306,
+      "database": "your_database",
+      "username": "root",
+      "password": "",
+      "description": "本地开发环境"
+    }
+  }
+}
