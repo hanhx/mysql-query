@@ -18,6 +18,15 @@ def validate_query(query):
     
     return False
 
+def ensure_limit(query, default_limit=10):
+    """Auto-append LIMIT if SELECT query has no LIMIT clause"""
+    query_stripped = query.strip().rstrip(';')
+    query_upper = query_stripped.upper()
+    if query_upper.startswith('SELECT') and 'LIMIT' not in query_upper:
+        query_stripped += f" LIMIT {default_limit}"
+        print(f"[auto] 未指定 LIMIT，默认追加 LIMIT {default_limit}", file=sys.stderr)
+    return query_stripped
+
 def main():
     if len(sys.argv) < 6:
         print("Error: Missing required parameters")
@@ -35,6 +44,8 @@ def main():
     if not validate_query(query):
         print("Error: Only SELECT, DESCRIBE, SHOW, and EXPLAIN queries are allowed")
         sys.exit(1)
+    
+    query = ensure_limit(query)
     
     try:
         import pymysql

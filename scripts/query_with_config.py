@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Import the main query function
 sys.path.insert(0, os.path.dirname(__file__))
-from query import validate_query
+from query import validate_query, ensure_limit
 
 def load_config(config_name):
     """Load database connection from config file"""
@@ -76,6 +76,8 @@ def main():
     if not validate_query(query):
         print("Error: Only SELECT, DESCRIBE, SHOW, and EXPLAIN queries are allowed")
         sys.exit(1)
+    
+    query = ensure_limit(query)
     
     try:
         import pymysql
