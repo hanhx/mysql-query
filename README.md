@@ -84,13 +84,10 @@ python3 scripts/query.py "SHOW TABLES" host 3306 database user password
 
 ## 安全机制
 
-脚本只允许只读查询，自动拒绝任何写操作：
-
-- ✅ SELECT / DESCRIBE / SHOW / EXPLAIN
-- ❌ INSERT / UPDATE / DELETE / DROP / CREATE / ALTER / TRUNCATE
+- **只读查询**：只允许 SELECT / DESCRIBE / SHOW / EXPLAIN，自动拒绝写操作
+- **自动 LIMIT**：SELECT 查询未指定 LIMIT 时，自动追加 `LIMIT 10`，防止意外拉取大量数据
 
 ## 注意事项
 
 - `config.json` 包含敏感信息，已在 `.gitignore` 中排除，不会被提交
 - 建议使用只读数据库账号
-- 查询时加 `LIMIT` 避免返回过多数据
