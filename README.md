@@ -1,4 +1,4 @@
-# MySQL Query Skill
+# [MySQL Query Skill](https://github.com/hanhx/mysql-query)
 
 让 AI 编辑器（Windsurf / Cursor）直接查询 MySQL 数据库，只读安全，开箱即用。
 
