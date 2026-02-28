@@ -2,92 +2,135 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-hanhx%2Fmysql--query-blue?logo=github)](https://github.com/hanhx/mysql-query)
 
-让 AI 编辑器（Windsurf / Cursor）直接查询 MySQL 数据库，只读安全，开箱即用。
+让 AI IDE（Windsurf / Cursor）直接在终端查询 MySQL，适合代码开发后的数据核对、结构检查和联调验证。
 
-## 快速开始
+---
 
-### 1. 安装依赖
+## 快速开始（1 分钟）
+
+### 1) 安装到 AI IDE
+
+**方式 A：直接安装（推荐，最省事）**
 
 ```bash
-pip3 install pymysql
+# Windsurf
+git clone https://github.com/hanhx/mysql-query.git ~/.codeium/windsurf/skills/mysql-query
+
+# Cursor
+git clone https://github.com/hanhx/mysql-query.git ~/.cursor/skills/mysql-query
 ```
 
-### 2. 配置数据库连接
+**方式 B：已在本地有仓库时，用软链接**
 
-复制示例配置并填入你的数据库信息：
+```bash
+# Windsurf
+ln -s /path/to/mysql-query ~/.codeium/windsurf/skills/mysql-query
+
+# Cursor
+ln -s /path/to/mysql-query ~/.cursor/skills/mysql-query
+```
+
+安装完成后，IDE 会自动识别 `SKILL.md` 并加载该 skill。
+
+> 首次执行查询时，如果本机未安装 `pymysql`，skill 会自动安装（等价于 `python -m pip install pymysql`），无需手动执行。
+> 如在受限环境不希望自动安装，可先设置：`export MYSQL_QUERY_AUTO_INSTALL=0`。
+
+### 2) 配置数据库连接（首次查询前完成）
 
 ```bash
 cp config.example.json config.json
 ```
 
-编辑 `config.json`：
+编辑 `config.json`，至少配置一个连接（例如 `bcm-test`）。
+
+`connections.<name>` 下字段说明：
+- 必填：`host`、`port`、`database`、`username`、`password`
+- 可选：`description`、`project_path`、`keywords`
 
 ```json
 {
   "connections": {
-    "test": {
+    "bcm-test": {
       "host": "your-host",
       "port": 3306,
       "database": "your_database",
       "username": "your-username",
       "password": "your-password",
-      "description": "测试环境"
+      "description": "测试环境",
+      "project_path": "/path/to/your/project",
+      "keywords": ["bcm", "test"]
     }
   }
 }
 ```
 
-### 3. 安装到编辑器
+---
 
-将此目录软链到 skill 目录：
+## 在聊天里怎么用
 
-```bash
-# Windsurf
-ln -s $(pwd) ~/.codeium/windsurf/skills/mysql-query
+配置好后，直接对 AI 说：
 
-# Cursor
-ln -s $(pwd) ~/.cursor/skills/mysql-query
-```
+> "帮我查一下 test 环境 user 表结构"
 
-### 4. 开始使用
+> "查一下 test 库 order 表最近 10 条数据"
 
-在聊天中直接告诉 AI：
+> "确认一下 xxx 字段是否已经上线到表结构"
 
-> "帮我查一下 test 环境 user 表的结构"
->
-> "查一下 test 库里 order 表最近 10 条数据"
+AI 会自动调用 skill 执行查询并返回结果。
 
-AI 会自动调用 skill 执行查询。
+---
 
-## 写完代码，让 AI 自己验证
+## 写完代码后自动查库验证
 
-配好数据库连接后，AI 不仅能帮你查数据，还能在写完代码后自动查库验证结果。例如：
+这个 skill 的推荐用法是：**写代码 → 查库验证 → 再调整**。
 
-> "帮我给 order 表加一个 status 字段，加完后查一下表结构确认"
->
-> "写一个按用户 ID 查订单的接口，写完后查几条数据验证 SQL 是否正确"
->
-> "重构一下这段查询逻辑，改完后帮我跑一下看结果对不对"
+你可以直接这样说：
 
-AI 会先完成代码修改，然后自动调用 skill 查库验证，形成 **写代码 → 查库验证** 的闭环，减少你在编辑器和数据库工具之间来回切换。
+> "帮我给 order 表加一个 status 字段，加完后查表结构确认"
 
-## 手动使用
+> "写一个按用户 ID 查询订单的接口，完成后查几条数据验证 SQL 是否正确"
+
+> "重构这段查询逻辑，改完后帮我查库核对结果"
+
+---
+
+## 手动命令（排障用）
 
 ```bash
-# 使用配置文件（推荐）
+# 用配置名查询（推荐）
 python3 scripts/query_with_config.py -c test "SHOW TABLES"
 python3 scripts/query_with_config.py -c test "SELECT * FROM your_table LIMIT 5"
 
-# 直接指定连接参数
+# 直接传连接参数
 python3 scripts/query.py "SHOW TABLES" host 3306 database user password
 ```
 
-## 安全机制
+---
 
-- **只读查询**：只允许 SELECT / DESCRIBE / SHOW / EXPLAIN，自动拒绝写操作
-- **自动 LIMIT**：SELECT 查询未指定 LIMIT 时，自动追加 `LIMIT 10`，防止意外拉取大量数据
+## 安全与默认行为
 
-## 注意事项
+- **只读限制**：仅允许 `SELECT / DESCRIBE / SHOW / EXPLAIN`
+- **自动限流**：`SELECT` 未写 `LIMIT` 时自动追加 `LIMIT 10`
+- **自动安装可控**：默认自动安装 `pymysql`；设置 `MYSQL_QUERY_AUTO_INSTALL=0` 可关闭
+- **敏感配置隔离**：`config.json` 已在 `.gitignore`，不会被提交
+- **建议**：使用只读数据库账号
 
-- `config.json` 包含敏感信息，已在 `.gitignore` 中排除，不会被提交
-- 建议使用只读数据库账号
+---
+
+## 常见问题
+
+### 1) 为什么查出来只有 10 条？
+因为 `SELECT` 未带 `LIMIT` 时会自动补 `LIMIT 10`。如果你需要更多数据，请显式写：
+
+```sql
+SELECT * FROM your_table LIMIT 100;
+```
+
+### 2) 为什么某些 SQL 被拒绝？
+该 skill 是只读模式，`INSERT/UPDATE/DELETE/DDL` 都会被拦截。
+
+### 3) AI 提示连接失败怎么办？
+检查：
+1. `config.json` 中 host/port/database/username/password 是否正确
+2. 数据库网络是否可达（办公网/VPN）
+3. 账号是否有目标库的只读权限

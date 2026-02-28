@@ -6,6 +6,8 @@ Usage: python3 query.py "SQL_QUERY" HOST PORT DATABASE USERNAME PASSWORD
 
 import sys
 import re
+import os
+import subprocess
 
 def validate_query(query):
     """Validate that query is read-only"""
@@ -27,6 +29,33 @@ def ensure_limit(query, default_limit=10):
         print(f"[auto] 未指定 LIMIT，默认追加 LIMIT {default_limit}", file=sys.stderr)
     return query_stripped
 
+def ensure_pymysql_installed():
+    """Ensure pymysql is available, auto-install if missing."""
+    try:
+        import pymysql  # noqa: F401
+        return
+    except ImportError:
+        auto_install = os.getenv("MYSQL_QUERY_AUTO_INSTALL", "1").strip().lower()
+        if auto_install in {"0", "false", "off", "no"}:
+            print("Error: 未检测到 pymysql，且已禁用自动安装（MYSQL_QUERY_AUTO_INSTALL=0）", file=sys.stderr)
+            print("请手动执行: python -m pip install pymysql", file=sys.stderr)
+            sys.exit(1)
+
+        print("[auto] 未检测到 pymysql，正在自动安装...", file=sys.stderr)
+
+    try:
+        subprocess.check_call([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "pymysql",
+        ])
+    except Exception as e:
+        print(f"Error: 自动安装 pymysql 失败: {e}", file=sys.stderr)
+        print("请手动执行: pip3 install pymysql", file=sys.stderr)
+        sys.exit(1)
+
 def main():
     if len(sys.argv) < 6:
         print("Error: Missing required parameters")
@@ -47,12 +76,8 @@ def main():
     
     query = ensure_limit(query)
     
-    try:
-        import pymysql
-    except ImportError:
-        print("Error: pymysql is not installed")
-        print("Please install it: pip3 install pymysql")
-        sys.exit(1)
+    ensure_pymysql_installed()
+    import pymysql
     
     try:
         # Connect to database

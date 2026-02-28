@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Import the main query function
 sys.path.insert(0, os.path.dirname(__file__))
-from query import validate_query, ensure_limit
+from query import validate_query, ensure_limit, ensure_pymysql_installed
 
 def load_config(config_name):
     """Load database connection from config file"""
@@ -79,12 +79,8 @@ def main():
     
     query = ensure_limit(query)
     
-    try:
-        import pymysql
-    except ImportError:
-        print("Error: pymysql is not installed")
-        print("Please install it: pip3 install pymysql")
-        sys.exit(1)
+    ensure_pymysql_installed()
+    import pymysql
     
     try:
         # Connect to database
