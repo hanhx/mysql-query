@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-hanhx%2Fmysql--query-blue?logo=github)](https://github.com/hanhx/mysql-query)
 
-让 AI IDE（Windsurf / Cursor）直接在终端查询 MySQL，适合代码开发后的数据核对、结构检查和联调验证。
+让 AI IDE（Windsurf / Cursor / Claude Code / OpenCode）直接在终端查询 MySQL，适合代码开发后的数据核对、结构检查和联调验证。
 
 ---
 
@@ -10,7 +10,15 @@
 
 ### 1) 安装到 AI IDE
 
-**方式 A：直接安装（推荐，最省事）**
+**方式 A：AI 自动安装（推荐，最简单）**
+
+直接在聊天里告诉 AI：
+
+> "帮我安装 mysql-query skill，GitHub 地址是 https://github.com/hanhx/mysql-query"
+
+AI 会自动识别你使用的 IDE，并执行对应的 clone 命令到正确的 skills 目录。
+
+**方式 B：手动安装**
 
 ```bash
 # Windsurf
@@ -18,9 +26,15 @@ git clone https://github.com/hanhx/mysql-query.git ~/.codeium/windsurf/skills/my
 
 # Cursor
 git clone https://github.com/hanhx/mysql-query.git ~/.cursor/skills/mysql-query
+
+# Claude Code
+git clone https://github.com/hanhx/mysql-query.git ~/.claude/skills/mysql-query
+
+# OpenCode
+git clone https://github.com/hanhx/mysql-query.git ~/.config/opencode/skills/mysql-query
 ```
 
-**方式 B：已在本地有仓库时，用软链接**
+**方式 C：已在本地有仓库时，用软链接**
 
 ```bash
 # Windsurf
@@ -28,6 +42,12 @@ ln -s /path/to/mysql-query ~/.codeium/windsurf/skills/mysql-query
 
 # Cursor
 ln -s /path/to/mysql-query ~/.cursor/skills/mysql-query
+
+# Claude Code
+ln -s /path/to/mysql-query ~/.claude/skills/mysql-query
+
+# OpenCode
+ln -s /path/to/mysql-query ~/.config/opencode/skills/mysql-query
 ```
 
 安装完成后，IDE 会自动识别 `SKILL.md` 并加载该 skill。
